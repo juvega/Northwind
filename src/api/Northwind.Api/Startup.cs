@@ -6,10 +6,13 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Northwind.Api.Repository;
+using Northwind.Api.Repository.MySql;
 
 namespace Northwind.Api
 {
@@ -26,6 +29,11 @@ namespace Northwind.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddDbContext<NorthwindDbContext>(opt=> 
+                opt.UseMySql("server=localhost;database=northwind;uid=netcore;password=Welcome123!", x => x.ServerVersion("8.0.21-mysql"))
+            );
+
+            services.AddTransient<ICustomerRepository,CustomerRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

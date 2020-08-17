@@ -1,16 +1,17 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Northwind.Api.Models;
 
-namespace Northwind.Api.Models
+namespace Northwind.Api.Repository.MySql
 {
-    public partial class northwindContext : DbContext
+    public partial class NorthwindDbContext : DbContext
     {
-        public northwindContext()
+        public NorthwindDbContext()
         {
         }
 
-        public northwindContext(DbContextOptions<northwindContext> options)
+        public NorthwindDbContext(DbContextOptions<NorthwindDbContext> options)
             : base(options)
         {
         }
@@ -20,15 +21,6 @@ namespace Northwind.Api.Models
         public virtual DbSet<Orderitem> Orderitem { get; set; }
         public virtual DbSet<Product> Product { get; set; }
         public virtual DbSet<Supplier> Supplier { get; set; }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseMySql("server=localhost;database=northwind;uid=netcore;password=Welcome123!", x => x.ServerVersion("8.0.21-mysql"));
-            }
-        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
