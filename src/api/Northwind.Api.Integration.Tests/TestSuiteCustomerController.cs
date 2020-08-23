@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Alba;
 using FluentAssertions;
 using GenFu;
+using Northwind.Api.Integration.Tests.Builders;
 using Northwind.Api.Models;
 using Northwind.Api.Repository.MySql;
 using Xunit;
@@ -24,12 +25,11 @@ namespace Northwind.Api.Integration.Tests
         public async Task Verify_GetAllCustomers_200ResponseCode_With_Data()
         {
             //Given            
-            _context.AddRange(A.ListOf<Customer>(2));
-            _context.SaveChanges();
+            new CustomerBuilder(_context).With10Customers();
             //When
             var results = await _system.GetAsJson<IList<Customer>>("/api/customer");
             //Then
-            results.Count.Should().Be(2);
+            results.Count.Should().Be(10);
         }
     }
     
