@@ -11,9 +11,23 @@ namespace Northwind.Api.Integration.Tests.Builders
         private readonly NorthwindDbContext _context;
         public CustomerBuilder(NorthwindDbContext context)
         {
-            _context = context;            
+            _context = context;   
+            CleanCustomerTable();                                    
         }
 
+        public CustomerBuilder WithSpecificCustomer(Customer customer)
+        {            
+            AddCustomer(customer);
+            return this;
+        }
+        public CustomerBuilder WithOneCustomerAndIdValue(int id)
+        {
+            A.Configure<Customer>()
+                .Fill(c=> c.Id, ()=> {return id;});
+            
+            AddCustomer(A.New<Customer>());
+            return this;
+        }
         public CustomerBuilder With10Customers()
         {
             AddCustomersToDbContext(CreateCustomer(10));
@@ -30,6 +44,12 @@ namespace Northwind.Api.Integration.Tests.Builders
             _context.SaveChanges();
         }
 
+        private void AddCustomer(Customer customer)
+        {
+            _context.Add(customer);
+            _context.SaveChanges();
+        }
+
         private IEnumerable<Customer> CreateCustomer(int quantity)
         {
             int id= 1;
@@ -37,6 +57,12 @@ namespace Northwind.Api.Integration.Tests.Builders
             .Fill(c=> c.Id, () => { return id++; });
 
             return A.ListOf<Customer>(quantity);
+        }
+
+        public void CleanCustomerTable()
+        {   
+            _context.RemoveRange(_context.Customer);
+            _context.SaveChanges();            
         }
     }
 }

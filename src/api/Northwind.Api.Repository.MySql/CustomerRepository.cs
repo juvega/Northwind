@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using Northwind.Api.Models;
 
 namespace Northwind.Api.Repository.MySql
@@ -7,6 +9,11 @@ namespace Northwind.Api.Repository.MySql
     {
         public CustomerRepository(NorthwindDbContext context) : base(context)
         {
+        }
+
+        public bool Exist(int id)
+        {
+            return _context.Customer.AsNoTracking().FirstOrDefault(c => c.Id == id) != null;
         }
     }
 }

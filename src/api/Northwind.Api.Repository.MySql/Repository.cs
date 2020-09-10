@@ -5,7 +5,7 @@ namespace Northwind.Api.Repository.MySql
 {
     public class Repository<T> : IRepository<T> where T : class
     {
-        private readonly NorthwindDbContext _context;
+        public readonly NorthwindDbContext _context;
         public Repository(NorthwindDbContext context)
         {
             _context = context;
