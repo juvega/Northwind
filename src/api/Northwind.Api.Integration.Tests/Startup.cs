@@ -17,25 +17,19 @@ namespace Northwind.Api.Integration.Tests
         public IConfiguration Configuration {get;}
 
         public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddControllers()
+        {            
+            services
+                .AddNorthwindDependencies()
+                .AddControllers()
                 .AddApplicationPart(typeof(Api.Controllers.CustomerController).Assembly);
 
-            services.AddDbContext<NorthwindDbContext>(opt => opt.UseInMemoryDatabase("MySqlDbInMemory"));
-
-            services.AddTransient<ICustomerRepository, CustomerRepository>();
+            services.AddDbContext<NorthwindDbContext>(opt => opt.UseInMemoryDatabase("MySqlDbInMemory"));            
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, NorthwindDbContext context)
         {            
-            context.Database.EnsureCreated();
-                        
-            app.UseRouting();
-            app.UseAuthorization();
-            app.UseEndpoints(endpoints => 
-            {
-                endpoints.MapControllers();
-            }); 
+            context.Database.EnsureCreated();                        
+            app.UseNorthwind();
         }
 
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Alba;
+using AutoMapper;
 using FluentAssertions;
 using GenFu;
 using Northwind.Api.Integration.Tests.Builders;
@@ -16,12 +17,14 @@ namespace Northwind.Api.Integration.Tests
     {
         private readonly SystemUnderTest _system;
         private readonly NorthwindDbContext _context;
+        private readonly IMapper _mapper;
         public TestSuiteCustomerController(WebApiFixture app)
         {
             _system = app.systemUnderTest;
-            _context = app.northwindDbContext;            
+            _context = app.northwindDbContext;
+            _mapper = app.mapper;
         }
-        
+
         #region Get Tests
         [Fact]
         public async Task Verify_GetAllCustomers_200ResponseCode_With_Data()
@@ -53,7 +56,7 @@ namespace Northwind.Api.Integration.Tests
         public async Task Verify_GetCustomer_200ResponseCode()
         {
             //Given            
-            int customerId = int.MaxValue-1;
+            int customerId = int.MaxValue - 1;
             new CustomerBuilder(_context).WithOneCustomerAndIdValue(customerId);
             //When
             var results = await _system.GetAsJson<Customer>($"/api/customer/{customerId}");
@@ -161,12 +164,12 @@ namespace Northwind.Api.Integration.Tests
         public async Task Verify_PutCustomer_200ResponseCode()
         {
             //Given         
-            var customer = A.New<Customer>();
-            customer.Id= int.MaxValue-2;
+            var customer = A.New<Models.Dto.Customer>();
+            customer.Id = int.MaxValue - 2;
 
-            new CustomerBuilder(_context).WithSpecificCustomer(customer);
-            
-            var result = await _system.PutJson(customer,"/api/customer").Receive<Customer>();
+            new CustomerBuilder(_context).WithSpecificCustomer(_mapper.Map<Customer>(customer));
+
+            var result = await _system.PutJson(customer, "/api/customer").Receive<Models.Dto.Customer>();
             //Then
             result.Should().BeEquivalentTo(customer);
         }
@@ -176,7 +179,7 @@ namespace Northwind.Api.Integration.Tests
         public async Task Verify_DeleteCustomer_400ResponseCode()
         {
             //Given         
-            
+
             //When
             await _system.Scenario(s =>
             {
@@ -191,7 +194,7 @@ namespace Northwind.Api.Integration.Tests
         public async Task Verify_DeleteCustomer_204ResponseCode()
         {
             //Given         
-            
+
             //When
             await _system.Scenario(s =>
             {
@@ -209,7 +212,7 @@ namespace Northwind.Api.Integration.Tests
             var customer = A.New<Customer>();
 
             new CustomerBuilder(_context).WithSpecificCustomer(customer);
-            
+
             await _system.Scenario(s =>
             {
                 s.Delete.Url($"/api/customer/{customer.Id}");
